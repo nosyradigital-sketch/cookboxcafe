@@ -1,5 +1,5 @@
-const CACHE = 'cookbox-v2';
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/manus-routes.json'];
+const CACHE = 'cookbox-v3';
+const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/manus-routes.json'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
