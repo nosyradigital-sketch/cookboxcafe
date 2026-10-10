@@ -202,3 +202,75 @@ html, body, #root { overflow-x:hidden; overflow-y:hidden; }
   .home-screen .hero-copy p { margin-bottom:12px; font-size:12px; }
   .home-screen .category-tile { min-height:64px; }
 }
+
+/* Final compact sizing pass for native-mobile proportions. */
+@media (max-width:760px) {
+  .topbar { height:60px; padding:0 14px; }
+  .brand-mark { width:32px; height:32px; border-radius:10px 10px 10px 3px; font-size:10px; }
+  .brand { gap:8px; }
+  .brand strong { font-size:16px; }
+  .brand small { margin-top:3px; font-size:8px; letter-spacing:1.6px; }
+  .top-actions { gap:6px; }
+  .icon-button, .avatar-button { width:32px; height:32px; }
+  .icon-button svg, .avatar-button svg { width:15px; height:15px; }
+  .page-content { height:calc(100dvh - 60px); padding:10px 12px 82px; }
+  .home-screen { grid-template-rows:minmax(220px, 34dvh) auto auto; gap:9px; }
+  .home-screen .hero-card { border-radius:18px; }
+  .home-screen .hero-copy { padding:24px 18px; }
+  .home-screen .hero-copy .eyebrow { font-size:9px; letter-spacing:1px; }
+  .home-screen .hero-copy h1 { max-width:270px; margin:11px 0 8px; font-size:34px; letter-spacing:-2px; }
+  .home-screen .hero-copy p { max-width:220px; margin-bottom:13px; font-size:12px; line-height:1.4; }
+  .home-screen .primary-button { min-height:38px; padding:0 13px; font-size:12px; }
+  .home-screen .hero-dots { bottom:14px; left:18px; }
+  .home-screen .hero-dots button { width:17px; height:3px; }
+  .home-screen .hero-dots button.active { width:28px; }
+  .delivery-strip { min-height:47px; padding:9px 10px; gap:8px; border-radius:13px; }
+  .strip-icon { width:28px; height:28px; border-radius:8px; }
+  .strip-icon svg { width:14px; height:14px; }
+  .delivery-strip strong { font-size:11px; }
+  .delivery-strip span { margin-top:2px; font-size:9px; }
+  .delivery-strip button { font-size:10px; }
+  .delivery-strip button svg { width:13px; }
+  .home-screen .section-heading { margin-bottom:7px; }
+  .home-screen .section-heading h2 { margin-top:4px; font-size:18px; letter-spacing:-.7px; }
+  .home-screen .section-heading .eyebrow { font-size:9px; }
+  .home-screen .section-heading .text-button { padding-top:14px; font-size:10px; }
+  .home-screen .category-row { grid-template-columns:repeat(5, minmax(0, 1fr)); gap:5px; }
+  .home-screen .category-tile { min-height:62px; padding:7px 5px; border-radius:11px; }
+  .home-screen .category-tile span { margin-bottom:3px; font-size:17px; }
+  .home-screen .category-tile strong { font-size:10px; line-height:1.05; }
+  .home-screen .category-tile small { margin-top:2px; font-size:7px; }
+  .bottom-nav { width:calc(100% - 22px); height:57px; margin-bottom:8px; border-radius:17px; }
+  .nav-item { width:62px; height:45px; gap:2px; font-size:8px; }
+  .nav-item svg { width:16px; height:16px; }
+  .floating-basket { bottom:74px; min-height:44px; padding:0 12px; border-radius:13px; font-size:11px; }
+  .floating-basket svg { width:15px; height:15px; }
+  .menu-screen .page-intro h1 { font-size:31px; letter-spacing:-1.7px; }
+  .menu-screen .page-intro p { font-size:11px; }
+  .menu-screen .search-box { height:39px; padding:0 11px; border-radius:11px; }
+  .menu-screen .search-box svg { width:15px; height:15px; }
+  .menu-screen .search-box input { font-size:11px; }
+  .menu-screen .category-tabs button { min-height:30px; font-size:8px; }
+  .menu-screen .product-grid { gap:7px; }
+  .menu-screen .product-image-wrap { aspect-ratio:1.55; }
+  .menu-screen .product-meta { padding:7px 8px 8px; }
+  .menu-screen .product-meta h3 { font-size:11px; }
+  .menu-screen .product-meta p { font-size:9px; }
+  .menu-screen .product-meta > strong { margin-top:5px; font-size:10px; }
+  .add-button, .favorite-button { width:28px; height:28px; right:7px; bottom:7px; border-radius:9px; }
+  .favorite-button { top:7px; bottom:auto; }
+  .add-button svg, .favorite-button svg { width:14px; height:14px; }
+  .page-controls { margin-top:8px; }
+  .page-controls button { min-height:34px; padding:0 11px; font-size:11px; }
+  .page-controls span { min-width:70px; font-size:9px; }
+}
+@media (max-width:390px) {
+  .home-screen { grid-template-rows:minmax(205px, 31dvh) auto auto; }
+  .home-screen .hero-copy { padding:20px 16px; }
+  .home-screen .hero-copy h1 { font-size:30px; }
+  .home-screen .hero-copy p { font-size:11px; }
+  .home-screen .category-tile { min-height:58px; }
+  .home-screen .category-tile strong { font-size:9px; }
+  .home-screen .category-tile small { display:none; }
+  .delivery-strip button { display:none; }
+}
