@@ -12,6 +12,7 @@ type DemoUser = { name: string; email: string; phone: string; address: string; f
 type CustomerDetails = Pick<DemoUser, "name" | "email" | "phone" | "address">;
 type PaymentChannel = "Card" | "Bank transfer" | "USSD";
 type CustomerOrder = { id: string; createdAt: string; items: BasketLine[]; total: number; status: "Paid in demo" | "Transfer receipt added (demo)" | "WhatsApp marked sent"; method: string; customer: CustomerDetails; receiptFileName?: string };
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }> };
 
 const img = (id: string) => `https://smrxhjrlcbjhyyocyyyq.supabase.co/storage/v1/object/public/menu-images/${id}.jpg`;
 const heroImages = [
@@ -100,11 +101,34 @@ export default function App() {
   const [toast, setToast] = useState("");
   const [hero, setHero] = useState(0);
   const [selectedJournalPost, setSelectedJournalPost] = useState<string | null>(null);
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => { const timer = window.setInterval(() => setHero((v) => (v + 1) % heroImages.length), 5000); return () => window.clearInterval(timer); }, []);
   useEffect(() => { localStorage.setItem("cookbox-basket", JSON.stringify(basket)); }, [basket]);
   useEffect(() => { localStorage.setItem("cookbox-customer-orders", JSON.stringify(customerOrders)); }, [customerOrders]);
-  useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(""), 2200); return () => window.clearTimeout(timer); }, [toast]);
+  useEffect(() => {
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallEvent(event as BeforeInstallPromptEvent);
+      if (localStorage.getItem("cookbox-install-dismissed") !== "1") {
+        window.setTimeout(() => setShowInstallPrompt(true), 900);
+      }
+    };
+    const onInstalled = () => { setShowInstallPrompt(false); setInstallEvent(null); };
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => { window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt); window.removeEventListener("appinstalled", onInstalled); };
+  }, []);
+  const installApp = async () => {
+    if (!installEvent) return;
+    await installEvent.prompt();
+    const choice = await installEvent.userChoice;
+    setShowInstallPrompt(false);
+    setInstallEvent(null);
+    if (choice.outcome === "accepted") setToast("Cookbox Cafe is being installed");
+  };
+  const dismissInstallPrompt = () => { setShowInstallPrompt(false); localStorage.setItem("cookbox-install-dismissed", "1"); };
 
   const add = (product: Product) => { setBasket((lines) => { const found = lines.find((line) => line.id === product.id); return found ? lines.map((line) => line.id === product.id ? { ...line, quantity: line.quantity + 1 } : line) : [...lines, { ...product, quantity: 1 }]; }); setToast(`${product.name} added to basket`); };
   const changeQty = (id: string, delta: number) => setBasket((lines) => lines.flatMap((line) => line.id === id ? (line.quantity + delta > 0 ? [{ ...line, quantity: line.quantity + delta }] : []) : [line]));
@@ -153,6 +177,7 @@ export default function App() {
     {showBasket && <div className="sheet-backdrop" onClick={() => setShowBasket(false)}><aside className="basket-sheet" onClick={(e) => e.stopPropagation()}><div className="sheet-handle" /><div className="sheet-heading"><div><span className="eyebrow dark">Ready when you are</span><h2>Your basket</h2></div><button className="close-button" onClick={() => setShowBasket(false)} aria-label="Close basket"><X size={19} /></button></div>{basket.length === 0 ? <p className="muted">Your basket is waiting for something delicious.</p> : <div className="basket-lines">{basket.map((line) => <div className="basket-line" key={line.id}><img src={line.image ? img(line.image) : heroImages[0]} alt="" /><div><strong>{line.name}</strong><span>{money(line.price)} · {line.description}</span><div className="qty"><button onClick={() => changeQty(line.id, -1)} aria-label={`Remove one ${line.name}`}><Minus size={13} /></button><b>{line.quantity}</b><button onClick={() => changeQty(line.id, 1)} aria-label={`Add one ${line.name}`}><Plus size={13} /></button></div></div><strong>{money(line.price * line.quantity)}</strong></div>)}</div>}<div className="basket-total"><span>Subtotal · delivery not included</span><strong>{money(subtotal)}</strong></div>{basket.length > 0 && <button className="clear-basket-button" onClick={() => { clearBasketAfterOrder(); setWhatsappStarted(false); setToast("Basket cleared"); }}>Clear basket</button>}<p className="delivery-note">This is a local demo. Demo payment never charges you; delivery fees and availability must be confirmed with Cookbox.</p>{basket.length > 0 && <div className="basket-actions"><button className="primary-button wide" onClick={() => { setPaymentDone(false); setLastOrder(null); setShowPayment(true); }}>Continue to demo checkout <CreditCard size={17} /></button><a className="secondary-button wide" href={whatsapp} target="_blank" rel="noreferrer" onClick={() => { setWhatsappStarted(true); setToast("WhatsApp opened in a new tab. Your basket is saved until you confirm the order."); }}>Review order in WhatsApp <ArrowRight size={17} /></a>{whatsappStarted && <div className="whatsapp-confirm"><p>After you send the message in WhatsApp, confirm below. This demo can’t detect whether the message was sent.</p><button className="secondary-button wide" onClick={() => { confirmWhatsAppOrder(); setShowBasket(false); }}>I sent it — save this order and clear my basket</button></div>}</div>}</aside></div>}
     {showAuth && <DemoAuthModal onClose={() => setShowAuth(false)} onSignIn={(details) => signInDemo("Email demo", details)} />}
     {showPayment && <DemoPaymentModal provider={paymentProvider} setProvider={setPaymentProvider} done={paymentDone} total={subtotal} user={demoUser} order={lastOrder} onClose={() => { const completed = paymentDone; setShowPayment(false); setShowBasket(false); if (completed) { if (demoUser) { setUserTab("orders"); setScreen("dashboard"); } else setScreen("account"); } }} onPay={completeDemoPayment} />}
+    {showInstallPrompt && installEvent && <div className="install-backdrop" role="dialog" aria-modal="true" aria-labelledby="install-title"><section className="install-card"><div className="install-icon"><img src="/icon-192.png" alt="" /></div><div className="install-copy"><span className="eyebrow dark">Cookbox Cafe app</span><h2 id="install-title">Install Cookbox</h2><p>Keep Cookbox on your home screen for faster ordering, like a native mobile app.</p></div><button className="close-button" onClick={dismissInstallPrompt} aria-label="Dismiss install prompt"><X size={18} /></button><div className="install-actions"><button className="primary-button wide" onClick={installApp}>Install app <ArrowRight size={16} /></button><button className="text-button" onClick={dismissInstallPrompt}>Not now</button></div></section></div>}
     {toast && <div className="toast" role="status">{toast} <button onClick={() => setToast("")}>Dismiss</button></div>}
   </div>;
 }
