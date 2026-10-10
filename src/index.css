@@ -274,3 +274,16 @@ html, body, #root { overflow-x:hidden; overflow-y:hidden; }
   .home-screen .category-tile small { display:none; }
   .delivery-strip button { display:none; }
 }
+
+/* Do not cut off meaningful details in the compact app. */
+.order-main span { overflow:visible; text-overflow:clip; white-space:normal; overflow-wrap:anywhere; }
+.category-tabs button { white-space:normal; line-height:1.1; overflow-wrap:anywhere; }
+.customer-order-heading > b { white-space:normal; overflow-wrap:anywhere; }
+.user-order-list > div, .favourite-list > div { min-width:0; flex-wrap:wrap; }
+.user-order-list > div > div, .favourite-list > div > span { min-width:0; overflow-wrap:anywhere; }
+@media (max-width:760px) {
+  .category-tabs button { min-height:32px; padding:0 2px; }
+  .order-main span { line-height:1.3; }
+  .favourite-list > div { align-items:flex-start; }
+  .favourite-list button { padding:6px 8px; font-size:10px; }
+}
