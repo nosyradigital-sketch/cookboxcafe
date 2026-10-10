@@ -182,3 +182,23 @@ html, body, #root { overflow-x:hidden; overflow-y:hidden; }
   .page-controls button { padding:0 10px; }
   .home-screen .hero-copy h1 { font-size:37px; }
 }
+
+/* Keep the home screen a true native-style launch screen: one hero, one action row, one category grid. */
+.home-screen > .section-block:nth-of-type(4) { display:none; }
+.home-screen > .trust-panel { display:none; }
+.home-screen { grid-template-rows:minmax(300px, 1fr) auto auto; }
+.home-screen .hero-copy { max-width:560px; }
+.home-screen .hero-copy h1 { max-width:440px; }
+@media (max-width:760px) {
+  .home-screen { grid-template-rows:minmax(300px, 1fr) auto auto; }
+  .home-screen .hero-copy { padding:30px 22px; }
+  .home-screen .hero-copy h1 { max-width:320px; line-height:.96; }
+  .home-screen .hero-copy p { max-width:260px; margin-bottom:18px; font-size:14px; }
+}
+@media (max-height:700px) {
+  .home-screen { grid-template-rows:minmax(245px, 1fr) auto auto; gap:8px; }
+  .home-screen .hero-copy { padding:22px 20px; }
+  .home-screen .hero-copy h1 { font-size:36px; }
+  .home-screen .hero-copy p { margin-bottom:12px; font-size:12px; }
+  .home-screen .category-tile { min-height:64px; }
+}
